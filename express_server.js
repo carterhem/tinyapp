@@ -6,7 +6,16 @@ const PORT = 8080; //default port 8080
 app.set("view engine", "ejs");
 
 function generateRandomString() {
+let result = "";
+//place to put end string
+const possibleCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+//what characters am i choosing from?
+for (let j = 0; j < 6; j++) {
+  //loop through the string possibleCharacters
+  result += possibleCharacters.charAt(Math.floor(Math.random() * possibleCharacters.length));
+  //add the character picked at random(mathfloor/mathrandom * length) to the result
 
+} return result;
 }
 
 
