@@ -1,3 +1,4 @@
+const { json } = require("express");
 const express = require("express");
 const app = express();
 const PORT = 8080; //default port 8080
@@ -10,7 +11,7 @@ app.get("/urls", (req, res) => {
 });
 
 const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
+  "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
 };
 
@@ -27,7 +28,8 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase.longURL};
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] //what goes here?
+  };
   res.render("urls_show", templateVars);
 });
 
