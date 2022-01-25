@@ -90,6 +90,22 @@ delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
 
+
+app.post("/urls/:shortURL", (req, res) => {
+  // console.log(req.params)
+  // console.log(req.body)
+  const newLongURL = req.body.newLongURL
+  console.log(newLongURL)
+  urlDatabase[req.params.shortURL] = newLongURL
+    // let longURL = req.body.longURL;
+    // let shortURL = req.body.shortURL;
+  // update urlDatabase[req.params.shortURL];
+  
+  
+    res.redirect("/urls");
+  });
+  
+
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   // console.log(longURL);
