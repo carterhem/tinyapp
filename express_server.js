@@ -60,7 +60,7 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   const longURL = req.body.longURL; // added longURL to this chain
   const shortURL = generateRandomString();
 
@@ -80,9 +80,19 @@ app.post("/urls", (req, res) => {
   // console.log("redirect","/urls/:shortURL")
 });
 
+app.post("/urls/:shortURL/delete", (req, res) => {
+console.log(req.params)
+  // let longURL = req.body.longURL;
+  // let shortURL = req.body.shortURL;
+delete urlDatabase[req.params.shortURL];
+
+// delete urlDatabase['shortURL'];
+  res.redirect("/urls");
+});
+
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
-  console.log(longURL);
+  // console.log(longURL);
   res.redirect(longURL);
 });
 
