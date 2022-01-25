@@ -95,7 +95,7 @@ delete urlDatabase[req.params.shortURL];
 app.post("/login", (req, res) => {
 console.log(req.body)
 // console.log(req.body.username)
-res.cookie('username', req.body.username,)
+res.cookie('username', req.body.username)
 // console.log(username)
 res.redirect("/urls")
   });
