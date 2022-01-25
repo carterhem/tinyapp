@@ -3,6 +3,8 @@ const express = require("express");
 const app = express();
 const PORT = 8080; //default port 8080
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser')
+
 
 let urlDatabase = {
   b2xVn2: "http://www.lighthouselabs.ca",
@@ -90,6 +92,13 @@ delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
 
+app.post("/login", (req, res) => {
+console.log(req.body)
+// console.log(req.body.username)
+res.cookie('username', req.body.username,)
+// console.log(username)
+res.redirect("/urls")
+  });
 
 app.post("/urls/:shortURL", (req, res) => {
   // console.log(req.params)
@@ -104,6 +113,7 @@ app.post("/urls/:shortURL", (req, res) => {
   
     res.redirect("/urls");
   });
+  
   
 
 app.get("/u/:shortURL", (req, res) => {
