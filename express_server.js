@@ -11,6 +11,8 @@ let urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
+const users = {};
+
 app.set("view engine", "ejs");
 
 function generateRandomString() {
@@ -73,7 +75,6 @@ app.get("/register", (req, res) => {
   res.render("register", templateVars);
 });
 
-
 app.post("/urls", (req, res) => {
   // console.log(req.body);
   const longURL = req.body.longURL; // added longURL to this chain
@@ -132,6 +133,25 @@ app.post("/urls/:shortURL", (req, res) => {
   // update urlDatabase[req.params.shortURL];
 
   res.redirect("/urls");
+});
+
+app.post("/register", (req, res) => {
+  console.log(req.body);
+  const userRandomID = generateRandomString();
+  users[userRandomID] = {};
+  const id = userRandomID;
+  users[userRandomID]["id"] = id;
+  const email = 
+  users[userRandomID]["email"] = email;
+  const password = 
+  users[userRandomID]["password"] = password;
+
+  // const userRandomID = (users[generateRandomString()] = {});
+  console.log("userRandomID", userRandomID)
+  console.log("id", id)
+  console.log("users", users);
+  //testing users object before redirect
+  // res.redirect("/urls");
 });
 
 app.get("/u/:shortURL", (req, res) => {
