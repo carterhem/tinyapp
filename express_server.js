@@ -44,18 +44,21 @@ const generateRandomString = function () {
 
 const findEmail = function (email, users) {
   for (const key in users) {
-    if (email === users[key]["email"]) {
-      return key;
+    if (email === users[key].email) {
+      return email;
     }
   }
 };
 
 const findPassword = function (password, users) {
+let returnKey = ""; 
   for (const key in users) {
-    if (password === users[key]["password"]) return key;
+    if (password === users[key].password) {
+      returnKey = users[key];
   }
-};
-
+}
+return returnKey;
+}
 //const bodyParser = require("body-parser"); moved to top for continuity
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -152,16 +155,23 @@ app.post("/login", (req, res) => {
     return res
       .status(400)
       .send("Email and/or password fields cannot be blank!");
-  } else if (loginEmail !== findEmail(loginEmail, users)) {
+   } else if (!findEmail(loginEmail, users)) {
     //as in if there is no email found that matches form submission
+    // console.log("loginEmail", loginEmail)
+    // console.log("findEmail", findEmail(loginEmail, users))
     return res
       .status(403)
       .send("No user account exists for that email address!");
-  } else if (loginEmail === findEmail(loginEmail, users)) {
-    if (loginPassword === findPassword(loginPassword, users)) {
-      res.cookie("user_id", users[key]["id"]);
+  } else if (findEmail(loginEmail, users)) {
+    // console.log(findEmail(loginEmail, users))
+    if (findPassword(loginPassword, users)) {
+      console.log(findPassword(loginPassword, users))
+     const loggedInUser = findPassword(loginPassword, users)
+      res.cookie("user_id", loggedInUser.id);
+      console.log("redirecting...");
       res.redirect("/urls");
-    } else {
+    }
+     else {
       return res.status(403).send("Incorrect Password");
     }
   }
