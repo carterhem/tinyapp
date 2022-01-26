@@ -63,7 +63,12 @@ const findPassword = function(password, users) {
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/urls/new", (req, res) => {
-  const user = users[req.cookies.user_id];
+  const user = users[req.cookies.user_id]
+  ? users[req.cookies.user_id]
+  : undefined;
+if (!user) {
+  return res.redirect("/login");
+}
   const templateVars = { user: user };
   res.render("urls_new", templateVars);
 });
@@ -114,7 +119,13 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  // console.log(req.body);
+  const user = users[req.cookies.user_id]
+  ? users[req.cookies.user_id]
+  : undefined;
+if (!user) {
+  return res.status(400)
+  .send("Users must be logged in to use this feature!");
+}
   const longURL = req.body.longURL; // added longURL to this chain
   const shortURL = generateRandomString();
 
