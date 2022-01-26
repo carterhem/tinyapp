@@ -104,6 +104,16 @@ app.get("/register", (req, res) => {
   res.render("register", templateVars);
 });
 
+app.get("/login", (req, res) => {
+  // const templateVars = {
+  //   shortURL: req.params.shortURL,
+  //   longURL: urlDatabase[req.params.shortURL],
+  //   username: req.cookies["user_id"],
+  // };
+  const templateVars = { user: null };
+  res.render("login", templateVars);
+});
+
 app.post("/urls", (req, res) => {
   // console.log(req.body);
   const longURL = req.body.longURL; // added longURL to this chain

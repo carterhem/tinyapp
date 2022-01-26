@@ -28,8 +28,10 @@
           <button type="submit" class="btn btn-outline-dark">Logout</button>
         </form>
         <% } else { %>
-        <form method="POST" action="/login">
-          <input type="text" name="username" placeholder="Username" />
+          <form method="get" action="/register">
+            <button type="submit" class="btn btn-outline-dark">Register</button>
+          </form>
+        <form method="get" action="/login">
           <button type="submit" class="btn btn-outline-dark">Login</button>
         </form>
         <% } %>
