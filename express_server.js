@@ -141,14 +141,16 @@ app.post("/register", (req, res) => {
   users[userRandomID] = {};
   const id = userRandomID;
   users[userRandomID]["id"] = id;
-  const email = 
+  const email = req.body.email;
   users[userRandomID]["email"] = email;
-  const password = 
+  const password = req.body.password;
   users[userRandomID]["password"] = password;
 
+  res.cookie("user_id", id)
   // const userRandomID = (users[generateRandomString()] = {});
   console.log("userRandomID", userRandomID)
   console.log("id", id)
+  console.log("req.body.email", req.body.email)
   console.log("users", users);
   //testing users object before redirect
   // res.redirect("/urls");
