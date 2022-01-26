@@ -7,26 +7,26 @@ const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 let urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
+  b2xVn2: "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
 };
 
-const users = { 
-  "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
   },
- "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
-    password: "dishwasher-funk"
-  }
-}
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
 
 app.set("view engine", "ejs");
 
-const generateRandomString = function() {
+const generateRandomString = function () {
   let result = "";
   //place to put end string
   const possibleCharacters =
@@ -42,20 +42,30 @@ const generateRandomString = function() {
   return result;
 };
 
+const findEmail = function(email, users) {
+  for (const key in users) {
+    if (email === users[key]["email"]){
+      return key;
+    }
+}
+};
+
 //const bodyParser = require("body-parser"); moved to top for continuity
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/urls/new", (req, res) => {
-  const user = users[req.cookies.user_id]
+  const user = users[req.cookies.user_id];
   const templateVars = { user: user };
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls", (req, res) => {
   // console.log(req)
-  const user = users[req.cookies.user_id] ? users[req.cookies.user_id] : undefined;
-  if(!user) {
-    return res.redirect("/login")
+  const user = users[req.cookies.user_id]
+    ? users[req.cookies.user_id]
+    : undefined;
+  if (!user) {
+    return res.redirect("/login");
   }
   const templateVars = { urls: urlDatabase, user: user };
   // console.log("templateVars", templateVars)
@@ -75,7 +85,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const user = users[req.cookies.user_id] 
+  const user = users[req.cookies.user_id];
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
@@ -90,7 +100,7 @@ app.get("/register", (req, res) => {
   //   longURL: urlDatabase[req.params.shortURL],
   //   username: req.cookies["user_id"],
   // };
-  const templateVars = {user: null};
+  const templateVars = { user: null };
   res.render("register", templateVars);
 });
 
@@ -155,7 +165,19 @@ app.post("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  console.log(req.body);
+  const firstEmail = req.body.email;
+  const firstPassword = req.body.password;
+  if (!firstEmail || !firstPassword) {
+    //if in the request there is no email or no password - error message
+    return res
+      .status(400)
+      .send("Email and/or password fields cannot be blank!");
+  } else if (findEmail(firstEmail, users)) {
+    //using my email function findEmail to identify if email from the request exists in the database    
+   return res.status(400).send("A user account has already been created with that email!"); 
+  } else if (firstEmail && firstPassword) {
+    //neither of these conditions are true, then proceed to register
+    console.log("req.body", req.body);
   const userRandomID = generateRandomString();
   users[userRandomID] = {};
   const id = userRandomID;
@@ -164,7 +186,8 @@ app.post("/register", (req, res) => {
   users[userRandomID]["email"] = email;
   const password = req.body.password;
   users[userRandomID]["password"] = password;
-
+  console.log("email", email)
+  
   res.cookie("user_id", userRandomID);
   // const userRandomID = (users[generateRandomString()] = {});
   // console.log("userRandomID", userRandomID);
@@ -173,6 +196,9 @@ app.post("/register", (req, res) => {
   console.log("users", users);
   //testing users object before redirect
   res.redirect("/urls");
+  }
+  
+
 });
 
 app.get("/u/:shortURL", (req, res) => {
