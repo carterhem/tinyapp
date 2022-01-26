@@ -7,7 +7,7 @@ const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 let urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
+  "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
 };
 
@@ -15,7 +15,7 @@ const users = {};
 
 app.set("view engine", "ejs");
 
-function generateRandomString() {
+const generateRandomString = function() {
   let result = "";
   //place to put end string
   const possibleCharacters =
@@ -29,7 +29,7 @@ function generateRandomString() {
     //add the character picked at random(mathfloor/mathrandom * length) to the result
   }
   return result;
-}
+};
 
 //const bodyParser = require("body-parser"); moved to top for continuity
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -146,11 +146,11 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
   users[userRandomID]["password"] = password;
 
-  res.cookie("user_id", userRandomID)
+  res.cookie("user_id", userRandomID);
   // const userRandomID = (users[generateRandomString()] = {});
-  console.log("userRandomID", userRandomID)
-  console.log("id", id)
-  console.log("req.body.email", req.body.email)
+  console.log("userRandomID", userRandomID);
+  console.log("id", id);
+  console.log("req.body.email", req.body.email);
   console.log("users", users);
   //testing users object before redirect
   res.redirect("/urls");
