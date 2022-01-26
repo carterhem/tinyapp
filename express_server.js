@@ -26,7 +26,7 @@ const users = {
 
 app.set("view engine", "ejs");
 
-const generateRandomString = function () {
+const generateRandomString = function() {
   let result = "";
   //place to put end string
   const possibleCharacters =
@@ -42,7 +42,7 @@ const generateRandomString = function () {
   return result;
 };
 
-const findEmail = function (email, users) {
+const findEmail = function(email, users) {
   for (const key in users) {
     if (email === users[key].email) {
       return email;
@@ -50,15 +50,15 @@ const findEmail = function (email, users) {
   }
 };
 
-const findPassword = function (password, users) {
-let returnKey = ""; 
+const findPassword = function(password, users) {
+  let returnKey = "";
   for (const key in users) {
     if (password === users[key].password) {
       returnKey = users[key];
+    }
   }
-}
-return returnKey;
-}
+  return returnKey;
+};
 //const bodyParser = require("body-parser"); moved to top for continuity
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -104,13 +104,11 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  
   const templateVars = { user: null };
   res.render("register", templateVars);
 });
 
 app.get("/login", (req, res) => {
-  
   const templateVars = { user: null };
   res.render("login", templateVars);
 });
@@ -155,7 +153,7 @@ app.post("/login", (req, res) => {
     return res
       .status(400)
       .send("Email and/or password fields cannot be blank!");
-   } else if (!findEmail(loginEmail, users)) {
+  } else if (!findEmail(loginEmail, users)) {
     //as in if there is no email found that matches form submission
     // console.log("loginEmail", loginEmail)
     // console.log("findEmail", findEmail(loginEmail, users))
@@ -165,13 +163,12 @@ app.post("/login", (req, res) => {
   } else if (findEmail(loginEmail, users)) {
     // console.log(findEmail(loginEmail, users))
     if (findPassword(loginPassword, users)) {
-      console.log(findPassword(loginPassword, users))
-     const loggedInUser = findPassword(loginPassword, users)
+      console.log(findPassword(loginPassword, users));
+      const loggedInUser = findPassword(loginPassword, users);
       res.cookie("user_id", loggedInUser.id);
       console.log("redirecting...");
       res.redirect("/urls");
-    }
-     else {
+    } else {
       return res.status(403).send("Incorrect Password");
     }
   }
