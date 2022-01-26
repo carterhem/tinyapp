@@ -16,8 +16,6 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-        <!-- <input class="n" type="text" name="" placeholder="Username">
-        <form class="centered-right" method="POST" action="/login"><button type="submit" class="btn btn-outline-dark">Login</button></form> -->
       </div>
     </div>
     <div>
@@ -28,11 +26,11 @@
           <button type="submit" class="btn btn-outline-dark">Logout</button>
         </form>
         <% } else { %>
-          <form method="get" action="/register">
-            <button type="submit" class="btn btn-outline-dark">Register</button>
-          </form>
         <form method="get" action="/login">
           <button type="submit" class="btn btn-outline-dark">Login</button>
+        </form>
+        <form method="get" action="/register">
+          <button type="submit" class="btn btn-outline-dark">Register</button>
         </form>
         <% } %>
       </div>

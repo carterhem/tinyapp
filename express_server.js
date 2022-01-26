@@ -42,12 +42,18 @@ const generateRandomString = function () {
   return result;
 };
 
-const findEmail = function(email, users) {
+const findEmail = function (email, users) {
   for (const key in users) {
-    if (email === users[key]["email"]){
+    if (email === users[key]["email"]) {
       return key;
     }
-}
+  }
+};
+
+const findPassword = function (password, users) {
+  for (const key in users) {
+    if (password === users[key]["password"]) return key;
+  }
 };
 
 //const bodyParser = require("body-parser"); moved to top for continuity
@@ -95,21 +101,13 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  // const templateVars = {
-  //   shortURL: req.params.shortURL,
-  //   longURL: urlDatabase[req.params.shortURL],
-  //   username: req.cookies["user_id"],
-  // };
+  
   const templateVars = { user: null };
   res.render("register", templateVars);
 });
 
 app.get("/login", (req, res) => {
-  // const templateVars = {
-  //   shortURL: req.params.shortURL,
-  //   longURL: urlDatabase[req.params.shortURL],
-  //   username: req.cookies["user_id"],
-  // };
+  
   const templateVars = { user: null };
   res.render("login", templateVars);
 });
@@ -146,16 +144,31 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  console.log(req.body);
-  // console.log(req.body.username)
-  res.cookie("username", req.body.username);
-  console.log(req.cookies);
-  res.redirect("/urls");
+  const loginEmail = req.body.email;
+  const loginPassword = req.body.password;
+  // console.log("loginEmail", loginEmail)
+  // console.log("loginPassword", loginPassword)
+  if (!loginEmail || !loginPassword) {
+    return res
+      .status(400)
+      .send("Email and/or password fields cannot be blank!");
+  } else if (loginEmail !== findEmail(loginEmail, users)) {
+    //as in if there is no email found that matches form submission
+    return res
+      .status(403)
+      .send("No user account exists for that email address!");
+  } else if (loginEmail === findEmail(loginEmail, users)) {
+    if (loginPassword === findPassword(loginPassword, users)) {
+      res.cookie("user_id", users[key]["id"]);
+      res.redirect("/urls");
+    } else {
+      return res.status(403).send("Incorrect Password");
+    }
+  }
 });
 
 app.post("/logout", (req, res) => {
   // console.log(req.body);
-  // console.log(req.body.username)
   res.clearCookie("user_id", req.body.user_id);
 
   res.redirect("/urls");
@@ -183,32 +196,32 @@ app.post("/register", (req, res) => {
       .status(400)
       .send("Email and/or password fields cannot be blank!");
   } else if (findEmail(firstEmail, users)) {
-    //using my email function findEmail to identify if email from the request exists in the database    
-   return res.status(400).send("A user account has already been created with that email!"); 
+    //using my email function findEmail to identify if email from the request exists in the database
+    return res
+      .status(400)
+      .send("A user account has already been created with that email!");
   } else if (firstEmail && firstPassword) {
     //neither of these conditions are true, then proceed to register
     console.log("req.body", req.body);
-  const userRandomID = generateRandomString();
-  users[userRandomID] = {};
-  const id = userRandomID;
-  users[userRandomID]["id"] = id;
-  const email = req.body.email;
-  users[userRandomID]["email"] = email;
-  const password = req.body.password;
-  users[userRandomID]["password"] = password;
-  console.log("email", email)
-  
-  res.cookie("user_id", userRandomID);
-  // const userRandomID = (users[generateRandomString()] = {});
-  // console.log("userRandomID", userRandomID);
-  // console.log("id", id);
-  // console.log("req.body.email", req.body.email);
-  console.log("users", users);
-  //testing users object before redirect
-  res.redirect("/urls");
-  }
-  
+    const userRandomID = generateRandomString();
+    users[userRandomID] = {};
+    const id = userRandomID;
+    users[userRandomID]["id"] = id;
+    const email = req.body.email;
+    users[userRandomID]["email"] = email;
+    const password = req.body.password;
+    users[userRandomID]["password"] = password;
+    console.log("email", email);
 
+    res.cookie("user_id", userRandomID);
+    // const userRandomID = (users[generateRandomString()] = {});
+    // console.log("userRandomID", userRandomID);
+    // console.log("id", id);
+    // console.log("req.body.email", req.body.email);
+    console.log("users", users);
+    //testing users object before redirect
+    res.redirect("/urls");
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
