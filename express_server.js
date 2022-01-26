@@ -146,14 +146,14 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
   users[userRandomID]["password"] = password;
 
-  res.cookie("user_id", id)
+  res.cookie("user_id", userRandomID)
   // const userRandomID = (users[generateRandomString()] = {});
   console.log("userRandomID", userRandomID)
   console.log("id", id)
   console.log("req.body.email", req.body.email)
   console.log("users", users);
   //testing users object before redirect
-  // res.redirect("/urls");
+  res.redirect("/urls");
 });
 
 app.get("/u/:shortURL", (req, res) => {
