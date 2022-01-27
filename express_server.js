@@ -6,9 +6,15 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
-let urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
+const urlDatabase = {
+  b6UTxQ: {
+      longURL: "https://www.tsn.ca",
+      userID: "aJ48lW"
+  },
+  i3BoGr: {
+      longURL: "https://www.google.ca",
+      userID: "aJ48lW"
+  }
 };
 
 const users = {
@@ -69,6 +75,9 @@ app.get("/urls/new", (req, res) => {
 if (!user) {
   return res.redirect("/login");
 }
+
+
+
   const templateVars = { user: user };
   res.render("urls_new", templateVars);
 });
@@ -100,9 +109,10 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const user = users[req.cookies.user_id];
+  //how do i say if the id doesn't exist - error message
   const templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL].longURL,
     user: user,
   };
   res.render("urls_show", templateVars);
@@ -128,16 +138,20 @@ if (!user) {
 }
   const longURL = req.body.longURL; // added longURL to this chain
   const shortURL = generateRandomString();
+  const URL = {
+    longURL: longURL,
+    userID: req.cookies.user_id
+  }
 
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = URL;
   //instead of making this hard - make the value of shortURL key in database longURL
   //spread operator to save the key value pair to the database
   // console.log("urldatabase", urlDatabase)
   // const ABC = {
-  //   shortURL:longURL
+
   console.log(urlDatabase);
   // console.log("ABC", ABC)
-  // console.log("req.body.longURL", req.body.longURL);  // Log the POST request body to the console
+ 
   // urlDatabase[shortURL];
   // console.log(urlDatabase)
   // console.log("shortURL", shortURL)
@@ -147,8 +161,7 @@ if (!user) {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   console.log(req.params);
-  // let longURL = req.body.longURL;
-  // let shortURL = req.body.shortURL;
+
   delete urlDatabase[req.params.shortURL];
 
   // delete urlDatabase['shortURL'];
@@ -193,14 +206,11 @@ app.post("/logout", (req, res) => {
 });
 
 app.post("/urls/:shortURL", (req, res) => {
-  // console.log(req.params)
-  // console.log(req.body)
+
   const newLongURL = req.body.newLongURL;
-  console.log(newLongURL);
-  urlDatabase[req.params.shortURL] = newLongURL;
-  // let longURL = req.body.longURL;
-  // let shortURL = req.body.shortURL;
-  // update urlDatabase[req.params.shortURL];
+ 
+  urlDatabase[req.params.shortURL].longURL = newLongURL;
+ 
 
   res.redirect("/urls");
 });
@@ -243,7 +253,19 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+
+  if(!urlDatabase[req.params.shortURL]) {
+    return res
+      .status(404)
+      .send("That ID does not exist!");
+  }
+  
+  const longURL = urlDatabase[req.params.shortURL].longURL;
+  //if longURL doesn't exist in the database - then give an error message
+
+ 
+  
+  
   // console.log(longURL);
   res.redirect(longURL);
 });
