@@ -66,6 +66,21 @@ const findPassword = function (password, users) {
   return returnKey;
 };
 
+
+const urlsForUser = function (user, urlDatabase) {
+ const userUrls = {};
+  for (const key in urlDatabase){
+   
+    if (user.id === urlDatabase[key].userID) {
+    // console.log("urlDatabase[key]", urlDatabase[key])
+      userUrls[key] = urlDatabase[key];
+    
+    }
+  }
+  return userUrls;
+};
+
+
 app.get("/urls/new", (req, res) => {
   const user = users[req.cookies.user_id]
     ? users[req.cookies.user_id]
@@ -87,16 +102,11 @@ app.get("/urls", (req, res) => {
     return res.status(400).send("Please Login or Register to view this page!");
     //bug - messed up the users ability to logout (if they aren't logged in)
   }
-  const urlsForUser = function (user, urlDatabase) {
-    if (user === urlDatabase["shortURL"]) {
-      //if the cookie userID = urldatabase id
-  console.log(urlDatabase["shortURL"]);
-      //return the short/long url piece - is this needed?
-    }
-  };
-  console.log("urlsforUseroutput", urlsForUser(user, urlDatabase));
-  console.log("urlDatabase", urlDatabase);
-  const templateVars = { urls: urlDatabase, user: user };
+  console.log("at urls page")
+  const urlList = urlsForUser(user, urlDatabase)
+  //now i have an array of shorturls and need to pull long urls from it to display
+  // console.log("urlList", urlList)
+  const templateVars = { urls: urlList, user: user };
   // console.log("templateVars", templateVars)
   res.render("urls_index", templateVars);
 });
@@ -115,7 +125,7 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const user = users[req.cookies.user_id];
-
+  
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL,
@@ -150,14 +160,38 @@ app.post("/urls", (req, res) => {
 
   urlDatabase[shortURL] = URL;
   //instead of making this hard - make the value of shortURL key in database longURL
-  // console.log(urlDatabase);
+  console.log("urlDatabase", urlDatabase);
+  console.log("users table", user)
   res.redirect(`/urls/${shortURL}`);
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  // console.log(req.params);
-  delete urlDatabase[req.params.shortURL];
+  // const user = users["key"];
+  console.log("req.cookies.user_id", req.cookies.user_id)
+  let cookieUser = req.cookies.user_id;
+  //changed from const to let
+
+  console.log("urldatabase", urlDatabase)
+  console.log("urlDatabase[req.params.shortURL]", urlDatabase[req.params.shortURL])
+  // console.log("urlDatabase[req.params.shortURL].userID", urlDatabase[req.params.shortURL].userID)
+  console.log("cookieUser", cookieUser)
+  // const user = users[req.cookies.user_id];
+  // console.log("delete route - user", user)
+  // const urlList = urlsForUser(user, urlDatabase)
+  //what user is logged in right now
+  // console.log(urlDatabase[req.params.shortURL])
+  // console.log(urlDatabase[req.params.shortURL].userID)
+  // console.log(req.cookies.userRandomID)
+  // console.log(req.cookies.user_id)
+  if(cookieUser === urlDatabase[req.params.shortURL].userID) {
+    delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
+  } else {
+    return res
+    .status(400)
+    .send("This URL does not belong to this User!");
+  }
+ res.redirect("/urls");
 });
 
 app.post("/login", (req, res) => {
@@ -177,7 +211,8 @@ app.post("/login", (req, res) => {
     if (findPassword(loginPassword, users)) {
       // console.log(findPassword(loginPassword, users));
       const loggedInUser = findPassword(loginPassword, users);
-      res.cookie("user_id", loggedInUser.id);
+      const userID = loggedInUser.id;
+      req.cookies["userID"];
       // console.log("redirecting...");
       res.redirect("/urls");
     } else {
@@ -188,14 +223,24 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id", req.body.user_id);
-  res.redirect("/urls");
+  res.redirect("/login");
   //bug - if this redirects to urls when the user logs out they are in a loop
 });
 
 app.post("/urls/:shortURL", (req, res) => {
-  const newLongURL = req.body.newLongURL;
+  console.log("req.cookies.user_id", req.cookies.user_id)
+  let cookieUser = req.cookies.user_id;
+  
+  if(cookieUser === urlDatabase[req.params.shortURL].userID) {
+    const newLongURL = req.body.newLongURL;
   urlDatabase[req.params.shortURL].longURL = newLongURL;
   res.redirect("/urls");
+  } else {
+    return res
+    .status(400)
+    .send("This URL does not belong to this User!");
+  }
+ 
 });
 
 app.post("/register", (req, res) => {
@@ -222,7 +267,7 @@ app.post("/register", (req, res) => {
     users[userRandomID]["email"] = email;
     const password = req.body.password;
     users[userRandomID]["password"] = password;
-    // console.log("email", email);
+    console.log(users)
     res.cookie("user_id", userRandomID);
     // console.log("users", users);
     res.redirect("/urls");
