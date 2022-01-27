@@ -90,7 +90,7 @@ app.get("/urls", (req, res) => {
     ? users[req.cookies.user_id]
     : undefined;
   if (!user) {
-    return res.redirect("/login");
+    return res.status(400).send("Please Login or Register to view this page!");
   }
   const templateVars = { urls: urlDatabase, user: user };
   // console.log("templateVars", templateVars)
