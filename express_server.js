@@ -32,12 +32,6 @@ const users = {
   },
 };
 
-// const urlsForUser = function(id) {
-// if (userID === user.id) {
-//   return filtered URLS
-// }
-// }
-
 const generateRandomString = function () {
   let result = "";
   //place to put end string
@@ -91,7 +85,17 @@ app.get("/urls", (req, res) => {
     : undefined;
   if (!user) {
     return res.status(400).send("Please Login or Register to view this page!");
+    //bug - messed up the users ability to logout (if they aren't logged in)
   }
+  const urlsForUser = function (user, urlDatabase) {
+    if (user === urlDatabase["shortURL"]) {
+      //if the cookie userID = urldatabase id
+  console.log(urlDatabase["shortURL"]);
+      //return the short/long url piece - is this needed?
+    }
+  };
+  console.log("urlsforUseroutput", urlsForUser(user, urlDatabase));
+  console.log("urlDatabase", urlDatabase);
   const templateVars = { urls: urlDatabase, user: user };
   // console.log("templateVars", templateVars)
   res.render("urls_index", templateVars);
@@ -111,7 +115,7 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const user = users[req.cookies.user_id];
-  //how do i say if the id doesn't exist - error message
+
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL,
@@ -159,7 +163,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/login", (req, res) => {
   const loginEmail = req.body.email;
   const loginPassword = req.body.password;
- //creating variables to house request information
+  //creating variables to house request information
   if (!loginEmail || !loginPassword) {
     return res
       .status(400)
@@ -185,6 +189,7 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id", req.body.user_id);
   res.redirect("/urls");
+  //bug - if this redirects to urls when the user logs out they are in a loop
 });
 
 app.post("/urls/:shortURL", (req, res) => {
@@ -228,7 +233,7 @@ app.get("/u/:shortURL", (req, res) => {
   if (!urlDatabase[req.params.shortURL]) {
     return res.status(404).send("That ID does not exist!");
   }
-//if longURL doesn't exist in the database - then give an error message
+  //if longURL doesn't exist in the database - then give an error message
   const longURL = urlDatabase[req.params.shortURL].longURL;
 
   res.redirect(longURL);
