@@ -92,8 +92,8 @@ const urlsForUser = function (user, urlDatabase) {
 };
 
 app.get("/urls/new", (req, res) => {
-  const user = users[req.cookies.user_id]
-    ? users[req.cookies.user_id]
+  const user = users[req.session.user_id]
+    ? users[req.session.user_id]
     : undefined;
   if (!user) {
     return res.redirect("/login");
@@ -105,13 +105,14 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls", (req, res) => {
   console.log("at urls GET page");
-  console.log("URL GEt req.cookies", req.cookies);
-  console.log("URLS GET req.cookies.id", req.cookies.id);
+  const user = req.session['user_id']
+  ? req.session['user_id']
+  : undefined;
+  // console.log("URL GEt req.cookies", req.cookies);
+  // console.log("URLS GET req.cookies.id", req.cookies.id);
   // console.log("urls GET users", users)
   // console.log("URLS GET users[req.cookies.id]", users[req.cookies.id] )
-  const user = users[req.cookies.user_id]
-    ? users[req.cookies.user_id]
-    : undefined;
+
   if (!user) {
     return res.status(400).send("Please Login or Register to view this page!");
     //bug - messed up the users ability to logout (if they aren't logged in)
@@ -137,7 +138,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const user = users[req.cookies.user_id];
+  const user = users[req.session.user_id];
 
   const templateVars = {
     shortURL: req.params.shortURL,
@@ -158,8 +159,8 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  const user = users[req.cookies.user_id]
-    ? users[req.cookies.user_id]
+  const user = users[req.session.user_id]
+    ? users[req.session.user_id]
     : undefined;
   if (!user) {
     return res.status(400).send("Users must be logged in to use this feature!");
@@ -168,7 +169,7 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const URL = {
     longURL: longURL,
-    userID: req.cookies.user_id,
+    userID: req.session.user_id,
   };
 
   urlDatabase[shortURL] = URL;
@@ -180,8 +181,8 @@ app.post("/urls", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   // const user = users["key"];
-  console.log("req.cookies.user_id", req.cookies.user_id);
-  let cookieUser = req.cookies.user_id;
+  // console.log("req.cookies.user_id", req.cookies.user_id);
+  let cookieUser = req.session.user_id;
   //changed from const to let
 
   console.log("urldatabase", urlDatabase);
@@ -221,7 +222,7 @@ app.post("/login", (req, res) => {
   console.log("=============", user)
   const compare = bcrypt.compareSync(loginPassword, user.password);
   if (compare) {
-    res.cookie("user_id", user.id);
+    req.session.user_id = "user_id";
     console.log("redirecting from /login to /urls");
     res.redirect("/urls");
   } else {
@@ -230,14 +231,14 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id", req.body.user_id);
+  req.session = null;
   res.redirect("/login");
   //bug - if this redirects to urls when the user logs out they are in a loop
 });
 
 app.post("/urls/:shortURL", (req, res) => {
   console.log("req.cookies.user_id", req.cookies.user_id);
-  let cookieUser = req.cookies.user_id;
+  let cookieUser = req.session.user_id;
 
   if (cookieUser === urlDatabase[req.params.shortURL].userID) {
     const newLongURL = req.body.newLongURL;
@@ -275,7 +276,7 @@ app.post("/register", (req, res) => {
     users[userRandomID]["password"] = hashedPassword;
     console.log("REGISTER userRandomID", userRandomID);
 
-    res.cookie("user_id", userRandomID);
+    req.session["user_id"] = userRandomID;
     // console.log("users", users);
     res.redirect("/urls");
   }
