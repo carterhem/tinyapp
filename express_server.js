@@ -3,13 +3,21 @@ const express = require("express");
 const app = express();
 const PORT = 8080; //default port 8080
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
+// const cookieParser = require("cookie-parser");
+const cookieSession = require("cookie-session")
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
-app.use(cookieParser());
+// app.use(cookieParser());
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(express.urlencoded({ extended: false }));
+
+app.use(cookieSession({
+  name: 'session',
+  keys:['38283ajfafwaawf58295gahuada984t', 'afuobawnafaoi23qyt4ujagfnalkfpf'],
+
+
+}))
 
 const urlDatabase = {
   b6UTxQ: {
