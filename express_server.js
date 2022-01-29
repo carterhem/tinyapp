@@ -63,24 +63,12 @@ const generateRandomString = function () {
   return result;
 };
 
-// const findPassword = function (password, users) {
-//   let returnKey = [];
-//   console.log("findPassword password", password);
-//   for (const key in users) {
-//     console.log("findPassword users[key].password", users[key].password);
-//     if (bcrypt.compareSync(password, users[key].password)) {
-//       returnKey = users[key];
-//     }
-//   }
-//   console.log("findPassword returnKey", returnKey);
-//   return returnKey;
-// };
+
 
 const urlsForUser = function (user, urlDatabase) {
   const userUrls = {};
   for (const key in urlDatabase) {
     if (user.id === urlDatabase[key].userID) {
-      // console.log("urlDatabase[key]", urlDatabase[key])
       userUrls[key] = urlDatabase[key];
     }
   }
@@ -135,19 +123,23 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
+  
   const user = users[req.session.user_id]
     ? users[req.session.user_id]
     : undefined;
+console.log("user", user)
+console.log("urlDatabase[req.params.shortURL].userID", urlDatabase[req.params.shortURL].userID)
 
     if (!user) {
       return res.status(400).send("Please login to access this page!");
     }
-    //  else if (user) {
-    //   if (user !== database user) {
-    //     return res.status(400).send("This is not your URL to access!");
-    //   }
-    // }
-//need to update this so that if the user given doesn't match user from database error message is returned
+     else if (user) {
+      if (user !== urlDatabase[req.params.shortURL].userID) {
+        
+        return res.status(400).send("This is not your URL to access!");
+      }
+    }
+
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL,
@@ -239,7 +231,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   req.session = null;
-  res.redirect("/login");
+  res.redirect("/urls");
 });
 
 app.post("/urls/:shortURL", (req, res) => {
@@ -257,8 +249,6 @@ app.post("/urls/:shortURL", (req, res) => {
 app.post("/register", (req, res) => {
   const firstEmail = req.body.email;
   const firstPassword = req.body.password;
- 
-
   if (!firstEmail || !firstPassword) {
     //if in the request there is no email or no password - error message
     return res
