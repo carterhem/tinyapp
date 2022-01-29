@@ -16,13 +16,6 @@ const testUsers = {
   }
 };
 
-// const findEmail = function (email, users) {
-//   for (const key in users) {
-//     if (email === users[key].email) {
-//       return users[key];
-//     }
-//   }
-// }
 
 describe('findEmail', function() {
   it('should return a user with valid email', function() { //should PASS
@@ -30,7 +23,6 @@ describe('findEmail', function() {
     const expectedUserID = "userRandomID";
     console.log("user", user)
     console.log("user.email", user.email)
-    // console.log("expectedUserID", expectedUserID)
    assert.strictEqual(user.id, expectedUserID, 'did not return user despite valid email')
   });
   it('should return undefined for a non-existent email', function() {// should PASS
