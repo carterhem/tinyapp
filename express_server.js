@@ -120,7 +120,16 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  const user = users[req.session.user_id]
+  ? users[req.session.user_id]
+  : undefined;
+  if (user) {
+    res.redirect("/urls");
+  } else if (!user) {
+    res.redirect("/login");
+  }
+
+
 });
 
 app.get("/urls.json", (req, res) => {
