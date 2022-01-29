@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const PORT = 8080; //default port 8080
 const bodyParser = require("body-parser");
+const findEmail = require("./helpers")
 // const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session")
 const bcrypt = require("bcryptjs");
@@ -57,13 +58,6 @@ const generateRandomString = function () {
   return result;
 };
 
-const findEmail = function (email, users) {
-  for (const key in users) {
-    if (email === users[key].email) {
-      return users[key];
-    }
-  }
-};
 
 // const findPassword = function (password, users) {
 //   let returnKey = [];
