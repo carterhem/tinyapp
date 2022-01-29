@@ -96,26 +96,18 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  console.log("at urls GET page");
-  console.log("URLS GET req.session.user_id", req.session.user_id)
-
   const user = users[req.session.user_id]
   ? users[req.session.user_id]
   : undefined;
-  // console.log("URL GEt req.cookies", req.cookies);
-  // console.log("URLS GET req.cookies.id", req.cookies.id);
-  // console.log("urls GET users", users)
-  // console.log("URLS GET users[req.cookies.id]", users[req.cookies.id] )
+//define if there is a user or not to build conditionals on
 
   if (!user) {
     return res.status(400).send("Please Login or Register to view this page!");
-    //bug - messed up the users ability to logout (if they aren't logged in)
   }
   const urlList = urlsForUser(user, urlDatabase);
   //now i have an array of shorturls and need to pull long urls from it to display
-  // console.log("urlList", urlList)
+
   const templateVars = { urls: urlList, user: user };
-  // console.log("templateVars", templateVars)
   res.render("urls_index", templateVars);
 });
 
